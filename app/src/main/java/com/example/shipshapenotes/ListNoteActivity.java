@@ -3,9 +3,11 @@ package com.example.shipshapenotes;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ public class ListNoteActivity extends AppCompatActivity {
     private NoteRecyclerViewAdapter.RecyclerViewClickListener listener;
     private Intent intent;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +39,28 @@ public class ListNoteActivity extends AppCompatActivity {
         setAdapter();
         setupButtonAddNote();
 
+        //Apagar nota com Swipe
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                Note deletedNote = notes.get(viewHolder.getAdapterPosition());
+                int position = viewHolder.getAdapterPosition();
+                notes.remove(position);
+                adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                Snackbar.make(recyclerView, deletedNote.getTitle(), Snackbar.LENGTH_LONG).setAction("Desfazer", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        notes.add(position, deletedNote);
+                        adapter.notifyItemInserted(position);
+                    }
+                }).show();
+            }
+        }).attachToRecyclerView(recyclerView);
 
     }
 
@@ -112,6 +138,7 @@ public class ListNoteActivity extends AppCompatActivity {
         notes.add(new Note("Marcar médico"));
 
     }
+
 
     //estava usando essa função antes para salvar a nota
     @Override
