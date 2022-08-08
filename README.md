@@ -4,7 +4,8 @@ Shipshape App
 <br>
 <br>
 
-<p align="center">Aplicativo criado como parte do projeto de mentoria no desenvolvimento de aplicações Android no CESAR, o Shipshape, um adjetivo em inglês que significa tudo em ordem auxília o usuário na organização de suas tarefas por meio de notas</p>
+<h3>
+<p align="center">Aplicativo criado como parte do projeto de mentoria no desenvolvimento de aplicações Android no CESAR, o Shipshape, um adjetivo em inglês que significa tudo em ordem auxília o usuário na organização de suas tarefas por meio de notas</p><h3>
 
 
 ##   
