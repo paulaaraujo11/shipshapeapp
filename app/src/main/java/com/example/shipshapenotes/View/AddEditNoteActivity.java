@@ -8,8 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.example.shipshapenotes.Model.Note;
 import com.example.shipshapenotes.R;
+import com.example.shipshapenotes.ViewModel.NoteViewModel;
+import com.google.android.material.snackbar.Snackbar;
+
 
 public class AddEditNoteActivity extends AppCompatActivity {
     private static final String TAG = "VALUES";
@@ -18,6 +21,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
     private EditText mDateInitial;
     private EditText mDateFinal;
     private String mPosition;
+    private View parent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +89,15 @@ public class AddEditNoteActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void saveNewNote(Note note) {
+        NoteViewModel.insert(note);
+        snackBar("Nota Salva");
+    }
 
-
+    public void snackBar(String message) {
+        Snackbar.make(parent, message, Snackbar.LENGTH_SHORT).show();
+    }
 
 
 }
