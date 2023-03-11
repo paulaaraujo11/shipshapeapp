@@ -1,6 +1,5 @@
-package com.example.shipshapenotes;
+package com.example.shipshapenotes.View;
 
-import static android.widget.Toast.*;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +8,10 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.shipshapenotes.R;
 
 public class ViewNoteActivity extends AppCompatActivity {
     @Override

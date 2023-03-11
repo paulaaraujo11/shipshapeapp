@@ -1,4 +1,4 @@
-package com.example.shipshapenotes;
+package com.example.shipshapenotes.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,10 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.example.shipshapenotes.R;
 
 public class AddEditNoteActivity extends AppCompatActivity {
     private static final String TAG = "VALUES";
@@ -68,7 +67,7 @@ public class AddEditNoteActivity extends AppCompatActivity {
                 String dateFinal = mDateFinal.getText().toString();
 
                 //create a intent to return to ListNoteActivity
-                Intent intent = new Intent(AddEditNoteActivity.this,ListNoteActivity.class);
+                Intent intent = new Intent(AddEditNoteActivity.this, ListNoteActivity.class);
                 intent.putExtra("title",title);
                 intent.putExtra("description",description);
                 intent.putExtra("date_initial",dateInitial);

@@ -1,10 +1,7 @@
-package com.example.shipshapenotes;
-
-import android.util.Log;
+package com.example.shipshapenotes.Model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

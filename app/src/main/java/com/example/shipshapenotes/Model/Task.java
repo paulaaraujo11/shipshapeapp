@@ -1,4 +1,4 @@
-package com.example.shipshapenotes;
+package com.example.shipshapenotes.Model;
 
 public class Task {
     private String title = "Nova task";

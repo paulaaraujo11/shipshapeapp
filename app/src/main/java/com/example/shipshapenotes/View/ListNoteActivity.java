@@ -1,4 +1,4 @@
-package com.example.shipshapenotes;
+package com.example.shipshapenotes.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.example.shipshapenotes.Adapter.NoteRecyclerViewAdapter;
+import com.example.shipshapenotes.Model.Note;
+import com.example.shipshapenotes.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
