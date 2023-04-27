@@ -10,20 +10,21 @@ import androidx.room.Update;
 import com.example.shipshapenotes.Model.Note;
 
 import java.util.List;
+
 @Dao
 public interface NoteDao {
-        @Insert
-        void insert(Note note);
+    @Insert
+    void insert(Note note);
 
-        @Update
-        void update(Note note);
+    @Update
+    void update(Note note);
 
-        @Delete
-        void delete(Note note);
+    @Delete
+    void delete(Note note);
 
-        @Query("DELETE FROM note_table")
-        void deleteAllNotes();
+    @Query("DELETE FROM note_table")
+    void deleteAllNotes();
 
-        @Query("SELECT * FROM note_table ")
-        LiveData<List<Note>> getAllNotes();
-    }
+    @Query("SELECT * FROM note_table ")
+    LiveData<List<Note>> getAllNotes();
+}

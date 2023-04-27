@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <item android:id="@+id/edit_note"
-          android:title="Editar"
-          app:showAsAction="never" />
-
-    <item android:id="@+id/delete_note"
-        android:title="Excluir"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.shipshapenotes.View.ListNoteActivity">
+    <item
+        android:id="@+id/delete_note"
+        android:orderInCategory="100"
+        android:title="Apagar todos lembretes"
         app:showAsAction="never" />
 </menu>

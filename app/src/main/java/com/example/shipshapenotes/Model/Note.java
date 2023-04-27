@@ -1,22 +1,18 @@
 package com.example.shipshapenotes.Model;
 
-import android.util.Log;
-
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity(tableName = "Note_table")
 public class Note {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String title = "Nova nota";
+    private String title;
     private String initialDate;
     private String finalDate;
     private String description;
@@ -26,13 +22,13 @@ public class Note {
     //private List<Task> tasks = new ArrayList<>();
 
     //Construtores
-    public Note(String title, Date initialDate, Date finalDate, String observation) {
+    public Note(String title, String observation, String initialDate, String finalDate) {
         this.title = title;
-        this.initialDate = initialDate.toString();
-        this.finalDate = finalDate.toString();
+        this.initialDate = initialDate;
+        this.finalDate = finalDate;
         this.description = observation;
-       // this.tasks = tasks;
-        total +=1;
+        // this.tasks = tasks;
+        total += 1;
     }
 
     public Note(String title) {
@@ -52,70 +48,66 @@ public class Note {
     public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
-    public String getDescription() {
-        if(this.description != null){
-            return description;
-        }
-        return "";
-    }
-    public void setDescription(String description) {
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
     }
+
     public String getInitialDate() {
-        if(this.initialDate!=null){
-            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-            return formato.format(initialDate);
-        }
-        return "sem data";
+        return initialDate;
     }
 
-    public void setInitialDate(String initialDate){
+    public void setInitialDate(String initialDate) {
         this.initialDate = initialDate;
     }
 
     public String getFinalDate() {
-        if(this.finalDate!=null){
-            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-            String data = formato.format(finalDate);
-            return data;
-        }
-        return "sem data";
-
+        return finalDate;
     }
 
-    public void setFinalDate(String finalDate){
+    public void setFinalDate(String finalDate) {
         this.finalDate = finalDate;
     }
 
-   // public void addTask(Task task) {
-     //   this.tasks.add(task);
-   // }
+    /*
+    FUNÇÕES ÚTEIS A CLASSE DE NOTAS
+     */
+    public static boolean isADate(String date) {
+        String regex = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/\\d{4}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(date);
+        if (matcher.matches()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean validateDate(String dateFinal, String dateInitial) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate datef = LocalDate.parse(dateFinal, formatter);
+        LocalDate datei = LocalDate.parse(dateInitial, formatter);
+        if (datef.isBefore(datei)) {
+            return false;
+        }
+        return true;
+    }
+
+    //TO DO - add tasks novas para uma nota/lembrete
+    // public void addTask(Task task) {
+    //   this.tasks.add(task);
+    // }
 
     //public void removeTask(Task task) {
-        //tasks.remove(task);
+    //tasks.remove(task);
     //}
-
-    public void setDates(Date initial_date,Date final_date) {
-        //add verificacao - não permitir data inicial maior que a data final
-        Boolean verify = true;
-        if(verify) {
-            this.finalDate = final_date.toString();
-            this.initialDate = initial_date.toString();
-        }
-    }
-
-    public Integer total() {
-        return total;
-    }
-
-    public Date parseDate(String date) throws ParseException {
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        return formato.parse(date);
-    }
 }
 
 

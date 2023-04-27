@@ -1,173 +1,154 @@
 package com.example.shipshapenotes.View;
 
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.example.shipshapenotes.Model.Note;
+import com.example.shipshapenotes.Utils.CreateNoteDialog;
+import com.example.shipshapenotes.Utils.UpdateNoteDialog;
+import com.example.shipshapenotes.ViewModel.NoteViewModel;
+import com.example.shipshapenotes.R;
+import com.example.shipshapenotes.Adapter.NoteRecyclerViewAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
-import com.example.shipshapenotes.Adapter.NoteRecyclerViewAdapter;
-import com.example.shipshapenotes.Model.Note;
-import com.example.shipshapenotes.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import java.util.List;
 
-import java.util.ArrayList;
-import java.util.Date;
+public class ListNoteActivity extends AppCompatActivity implements
+        NoteRecyclerViewAdapter.OnNoteClickListner, CreateNoteDialog.CreateNoteListener,
+        UpdateNoteDialog.UpdateNoteListener {
 
-public class ListNoteActivity extends AppCompatActivity {
-    private ArrayList<Note> notes;
-    private RecyclerView recyclerView;
-    private NoteRecyclerViewAdapter adapter;
-    private NoteRecyclerViewAdapter.RecyclerViewClickListener listener;
-    private Intent intent;
-
+    private NoteViewModel noteViewModel;
+    private RecyclerView mRecyclerView;
+    private NoteRecyclerViewAdapter noteRecyclerViewAdapter;
+    private View parent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_note_activity);
-        recyclerView = findViewById(R.id.note_list);
-        notes = new ArrayList<>();
-        setUserNotes();
-        setAdapter();
-        setupButtonAddNote();
+        intToolbar();
+        intView();
 
-        //Apagar nota com Swipe
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        //Observer para "escutar" as mudanças na lista de notas
+        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
+        noteViewModel.getAllNotes().observe(this, new Observer<List<Note>>() {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            public void onChanged(List<Note> notes) {
+                noteRecyclerViewAdapter.setNotes(notes);
+            }
+        });
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
                 return false;
             }
 
+            //apaga o lembrete quando deslizado para o lado
             @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                Note deletedNote = notes.get(viewHolder.getAdapterPosition());
-                int position = viewHolder.getAdapterPosition();
-                notes.remove(position);
-                adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-                Snackbar.make(recyclerView, deletedNote.getTitle(), Snackbar.LENGTH_LONG).setAction("Desfazer", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        notes.add(position, deletedNote);
-                        adapter.notifyItemInserted(position);
-                    }
-                }).show();
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                noteViewModel.delete(noteRecyclerViewAdapter.getNoteAt(viewHolder.getAdapterPosition()));
+                snackBar("Lembrete apagado");
             }
-        }).attachToRecyclerView(recyclerView);
-
+        }).attachToRecyclerView(mRecyclerView);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        saveChangesNotes();
-    }
+    private void intView() {
+        parent = findViewById(android.R.id.content);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        mRecyclerView = findViewById(R.id.note_list);
 
-    private void saveChangesNotes() {
-        Intent data = getIntent();
-        if (data.getExtras() != null) {
-            Log.d("TAG", "Dados " + data.toString());
-            // get the item note
-            String title = data.getStringExtra("title");
-            String description = data.getStringExtra("description");
-            String date_initial = data.getStringExtra("date_initial");
-            String date_final = data.getStringExtra("date_final");
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
 
-            Note note = new Note(title);
-            note.setDescription(description);
-            note.setInitialDate(date_initial);
-            note.setFinalDate(date_final);
-            String sPosition = data.getStringExtra("position");
-            Log.d("TAG", "position " + sPosition);
-            Integer position = Integer.valueOf(sPosition);
-            if (position != -1) {
-                adapter.updateNote(note, position);
-            } else {
-                adapter.addNote(note);
-            }
-        }
-    }
+        //Seta o adapter para o RecyclerView
+        noteRecyclerViewAdapter = new NoteRecyclerViewAdapter();
+        noteRecyclerViewAdapter.setItemOnClick(this);
+        mRecyclerView.setAdapter(noteRecyclerViewAdapter);
 
-    private void setupButtonAddNote() {
-        FloatingActionButton add = findViewById(R.id.addNoteFAB);
-        add.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ListNoteActivity.this, AddEditNoteActivity.class);
-                startActivityForResult(intent, 1);
+                openCreateNoteDialog();
             }
         });
     }
 
-    private void setAdapter() {
-        setOnclickListener();
-        adapter = new NoteRecyclerViewAdapter(notes, listener);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-    }
-
-    private void setOnclickListener() {
-        listener = new NoteRecyclerViewAdapter.RecyclerViewClickListener() {
-            @Override
-            public void onClick(View v, int position) {
-                Intent intent = new Intent(getApplicationContext(), ViewNoteActivity.class);
-                intent.putExtra("title", notes.get(position).getTitle());
-                intent.putExtra("description", notes.get(position).getDescription());
-                intent.putExtra("finalDate", notes.get(position).getFinalDate());
-                intent.putExtra("initialDate", notes.get(position).getInitialDate());
-                intent.putExtra("position", String.valueOf(position));
-                Log.d("TAG", "position in LIST " + position);
-                startActivity(intent);
-            }
-        };
-    }
-    
-    private void setUserNotes() {
-        notes.add(new Note("Ir ao mercado"));
-        notes.add(new Note("Estudar para as provas", new Date(), new Date(), "Provas trimestrais"));
-        notes.add(new Note("Ir na festa da Camila"));
-        notes.add(new Note("Marcar médico"));
-
-    }
-
-
-    //estava usando essa função antes para salvar a nota
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Log.d("TAG", "Dados " +data.toString());
-            // get the item note
-            String title = data.getStringExtra("title");
-            String description = data.getStringExtra("description");
-            String date_initial = data.getStringExtra("date_initial");
-            String date_final = data.getStringExtra("date_final");
-
-            Note note = new Note(title);
-            note.setDescription(description);
-            note.setInitialDate(date_initial);
-            note.setFinalDate(date_final);
-
-            if (requestCode == 1) {
-                adapter.addNote(note);
-            } else {
-                int position = data.getIntExtra("position", -1);
-                adapter.updateNote(note, position);
-            }
-        }
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.note_menu, menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_note:
+                noteViewModel.deleteAllNotes();
+                snackBar("Todos lembretes foram apagados");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openCreateNoteDialog() {
+        CreateNoteDialog createNoteDialog = new CreateNoteDialog();
+        createNoteDialog.show(getSupportFragmentManager(), "create note");
+    }
+
+    @Override
+    public void saveNewNote(Note note) {
+        noteViewModel.insert(note);
+        snackBar("Lembrete Salvo");
+    }
+
+    @Override
+    public void onNoteClick(Note note) {
+        Log.d("MainActivity_Log", "" + note.getId());
+        openUpdateNoteDialog(note);
+    }
+
+    private void openUpdateNoteDialog(Note note) {
+        UpdateNoteDialog updateNoteDialog = new UpdateNoteDialog();
+        updateNoteDialog.setNote(note);
+        updateNoteDialog.show(getSupportFragmentManager(), "Lembrete atualizado");
+    }
+
+    @Override
+    public void updateNewNote(Note note) {
+        noteViewModel.update(note);
+        snackBar("Lembrete atualizado");
+    }
+
+    private void intToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    public void snackBar(String message) {
+        Snackbar.make(parent, message, Snackbar.LENGTH_SHORT).show();
+    }
 
 }
+
+
+

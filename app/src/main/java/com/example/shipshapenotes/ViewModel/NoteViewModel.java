@@ -22,8 +22,7 @@ public class NoteViewModel extends AndroidViewModel {
         allNotes = repository.getAllNotes();
     }
 
-
-    public static void insert(Note note){
+    public void insert(Note note){
         repository.insert(note);
     }
 
@@ -35,11 +34,9 @@ public class NoteViewModel extends AndroidViewModel {
         repository.delete(note);
     }
 
-    public void deleteAllPlayers(){
-        repository.deleteAllPlayers();
-    }
+    public void deleteAllNotes(){repository.deleteAllNotes();}
 
-    public LiveData<List<Note>> getAllPlayers(){
+    public LiveData<List<Note>> getAllNotes(){
         return allNotes;
     }
 }
