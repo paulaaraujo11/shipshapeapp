@@ -10,21 +10,19 @@ Shipshape App
 
 ##   
 ####  
-![Design sem nome](https://user-images.githubusercontent.com/51267301/183462871-45340353-e517-4d79-8f95-2638d0295f3c.gif)
-
+![vid-20230506-wa0003_RJmCwPP0 (1)](https://user-images.githubusercontent.com/51267301/236624324-27bcc7c3-2423-4c15-83ab-a4c8669455ca.gif)
 
 ## O que foi feito.
 
 #### <font color=#9C9C9A> Setup:</font>  
 
-* **Mockup das telas**
-* **Visualização com RecyclerView**
-* **Criação, atualização e deleção das notas**
+* **Mudança de arquitetura para MVVM**
+* **Adição do DAO e Recycler**
+* **Atualização de layout com cards**
 
 ## O que vem pela frente
 
 #### <font color=#9C9C9A> Setup:</font>  
 
-* **Uso do Room para manutenção dos dados localmente**
 * **Autenticação de usuário**
 * **Criar, marcar e excluir tarefas em uma nota**
